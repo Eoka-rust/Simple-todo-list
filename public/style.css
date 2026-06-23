@@ -1,0 +1,237 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #f0f4f8;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 40px 20px;
+  color: #1e293b;
+}
+
+.app {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  width: 100%;
+  max-width: 550px;
+  padding: 30px 25px;
+}
+
+h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #1e40af;
+}
+
+.add-form {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.add-form input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 2px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border 0.2s;
+}
+
+.add-form input:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.add-form button {
+  margin-left: 10px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0 20px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.add-form button:hover {
+  background: #1d4ed8;
+}
+
+.task-list {
+  list-style: none;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 15px;
+  margin-bottom: 10px;
+  background: #f8fafc;
+  border-radius: 10px;
+  transition: background 0.2s;
+}
+
+.task-item:hover {
+  background: #f1f5f9;
+}
+
+.task-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.task-left input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+
+.task-left span {
+  font-size: 1rem;
+  word-break: break-word;
+}
+
+.completed .task-left span {
+  text-decoration: line-through;
+  color: #94a3b8;
+}
+
+.task-right {
+  display: flex;
+  gap: 5px;
+}
+
+.task-right button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 5px 8px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.edit-btn {
+  color: #2563eb;
+}
+
+.edit-btn:hover {
+  background: #eff6ff;
+}
+
+.delete-btn {
+  color: #ef4444;
+}
+
+.delete-btn:hover {
+  background: #fef2f2;
+}
+
+.edit-input {
+  flex: 1;
+  padding: 5px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.edit-input.hidden,
+.task-text.hidden {
+  display: none;
+}
+
+.empty {
+  text-align: center;
+  color: #94a3b8;
+  padding: 40px 0;
+  font-size: 1.1rem;
+}
+
+.error {
+  margin-top: 15px;
+  padding: 10px;
+  background: #fee2e2;
+  color: #b91c1c;
+  border-radius: 8px;
+}
+
+/* Стили модального окна */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-box {
+  background: white;
+  border-radius: 12px;
+  padding: 30px 25px;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.modal-box p {
+  font-size: 1.1rem;
+  margin-bottom: 25px;
+  color: #1e293b;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.modal-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.cancel-btn {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.cancel-btn:hover {
+  background: #e2e8f0;
+}
+
+.confirm-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.confirm-btn:hover {
+  background: #dc2626;
+}
+
+.hidden {
+  display: none !important;
+}
