@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Список задач</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="app">
+    <h1>📋 Общий список задач</h1>
+    <form id="taskForm" class="add-form">
+      <input type="text" id="taskInput" placeholder="Новая задача..." autofocus required>
+      <button type="submit">Добавить</button>
+    </form>
+    <ul id="taskList" class="task-list"></ul>
+    <div id="error" class="error hidden"></div>
+  </div>
+
+  <!-- Модальное окно подтверждения удаления -->
+  <div id="deleteModal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <p>Удалить эту задачу?</p>
+      <div class="modal-actions">
+        <button id="cancelDeleteBtn" class="modal-btn cancel-btn">Отмена</button>
+        <button id="confirmDeleteBtn" class="modal-btn confirm-btn">Удалить</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const taskForm = document.getElementById('taskForm');
+    const taskInput = document.getElementById('taskInput');
+    const taskList = document.getElementById('taskList');
+    const errorDiv = document.getElementById('error');
+    const deleteModal = document.getElementById('deleteModal');
+    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+    let todoIdToDelete = null;
+
+    function showError(msg) {
+      errorDiv.textContent = msg;
+      errorDiv.classList.remove('hidden');
+      setTimeout(() => errorDiv.classList.add('hidden'), 3000);
+    }
+
+    async function loadTasks() {
+      const res = await fetch('/api/todos');
+      const todos = await res.json();
+      render(todos);
+    }
+
+    function render(todos) {
+      taskList.innerHTML = '';
+      if (todos.length === 0) {
+        taskList.innerHTML = '<li class="empty">Пока нет задач</li>';
+        return;
+      }
+      todos.forEach(todo => {
+        const li = document.createElement('li');
+        li.className = `task-item ${todo.completed ? 'completed' : ''}`;
+        li.innerHTML = `
+          <div class="task-left">
+            <input type="checkbox" ${todo.completed ? 'checked' : ''} data-id="${todo.id}">
+            <span class="task-text">${escapeHtml(todo.text)}</span>
+            <input type="text" class="edit-input hidden" value="${escapeHtml(todo.text)}" data-id="${todo.id}">
+          </div>
+          <div class="task-right">
+            <button class="edit-btn" data-id="${todo.id}">✎</button>
+            <button class="delete-btn" data-id="${todo.id}">✕</button>
+          </div>
+        `;
+        taskList.appendChild(li);
+      });
+
+      // Чекбоксы
+      document.querySelectorAll('.task-item input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', async function() {
+          const id = this.dataset.id;
+          await fetch(`/api/todos/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ completed: this.checked ? 1 : 0 })
+          });
+          loadTasks();
+        });
+      });
+
+      // Редактирование (встроенное)
+      document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const id = this.dataset.id;
+          const li = this.closest('.task-item');
+          const span = li.querySelector('.task-text');
+          const input = li.querySelector('.edit-input');
+
+          if (input.classList.contains('hidden')) {
+            span.classList.add('hidden');
+            input.classList.remove('hidden');
+            input.focus();
+            this.textContent = '💾';
+          } else {
+            const newText = input.value.trim();
+            if (newText) {
+              updateTaskText(id, newText);
+            } else {
+              span.classList.remove('hidden');
+              input.classList.add('hidden');
+              this.textContent = '✎';
+            }
+          }
+        });
+      });
+
+      // Удаление через модальное окно
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          todoIdToDelete = this.dataset.id;
+          deleteModal.classList.remove('hidden');
+        });
+      });
+    }
+
+    async function updateTaskText(id, newText) {
+      try {
+        const res = await fetch(`/api/todos/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: newText })
+        });
+        if (!res.ok) {
+          const errData = await res.json();
+          showError(errData.error || 'Ошибка обновления');
+        }
+        loadTasks();
+      } catch (err) {
+        showError('Сетевая ошибка');
+      }
+    }
+
+    // Обработчики модального окна
+    cancelDeleteBtn.addEventListener('click', () => {
+      deleteModal.classList.add('hidden');
+      todoIdToDelete = null;
+    });
+
+    confirmDeleteBtn.addEventListener('click', async () => {
+      if (todoIdToDelete) {
+        await fetch(`/api/todos/${todoIdToDelete}`, { method: 'DELETE' });
+        deleteModal.classList.add('hidden');
+        todoIdToDelete = null;
+        loadTasks();
+      }
+    });
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    taskForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const text = taskInput.value.trim();
+      if (!text) return;
+      await fetch('/api/todos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
+      taskInput.value = '';
+      loadTasks();
+    });
+
+    loadTasks();
+  </script>
+</body>
+</html>
