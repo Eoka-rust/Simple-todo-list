@@ -17,4 +17,4 @@ npm start
 
 
 ссылка на деплой:
-simple-todo-list-production-0790.up.railway.app
+'https://simple-todo-list-production-0790.up.railway.app'
