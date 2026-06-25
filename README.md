@@ -14,3 +14,7 @@ npm start
 2. Railway сам установит зависимости и запустит `node app.js`.
 3. Healthcheck настроен на `/health`.
 4. Приложение будет доступно по выданному домену.  
+
+
+ссылка на деплой:
+simple-todo-list-production-0790.up.railway.app
